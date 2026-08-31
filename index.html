@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audition Fashion Finder</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Prompt', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between">
+
+    <div>
+        <!-- Header -->
+        <header class="bg-slate-800 border-b border-slate-700 shadow-md sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center space-x-3">
+                    <span class="text-3xl">👗</span>
+                    <h1 class="text-2xl font-bold bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
+                        Audition Fashion Finder
+                    </h1>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="switchTab('browse')" id="btnBrowse" class="px-4 py-2 rounded-lg font-medium bg-pink-600 text-white transition">ค้นหาแฟชั่น / รายการ</button>
+                    <button onclick="switchTab('aiSearch')" id="btnAiSearch" class="px-4 py-2 rounded-lg font-medium bg-slate-700 text-slate-300 hover:bg-slate-600 transition">🔍 ค้นหาด้วยรูปภาพ (AI)</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Top Banner: ผู้จัดทำและปุ่ม Donate พร้อม Promptpay -->
+        <div class="bg-slate-800/60 border-b border-slate-800 py-3">
+            <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-3 text-sm">
+                <div class="text-slate-300">
+                    ผู้จัดทำ: <span class="text-pink-400 font-medium">Purificatixn</span>
+                </div>
+                <div>
+                    <button onclick="showDonateModal()" class="inline-flex items-center gap-2 px-4 py-1.5 bg-pink-600 hover:bg-pink-500 text-white font-medium rounded-lg transition shadow text-xs">
+                        <span>☕ สนับสนุนผู้จัดทำ (Promptpay: 0988920419)</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <main class="max-w-7xl mx-auto px-4 py-8">
+
+            <!-- TAB 1: Browse Items -->
+            <section id="tabBrowse" class="space-y-6">
+                <!-- Filter Bar -->
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
+                    <!-- Search -->
+                    <div class="lg:col-span-2">
+                        <label class="block text-xs font-medium text-slate-400 mb-1">ค้นหาชื่อไอเทม</label>
+                        <input type="text" id="searchInput" placeholder="พิมพ์ชื่อไอเทม..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-pink-500">
+                    </div>
+                    <!-- Category -->
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">หมวดหมู่</label>
+                        <select id="categorySelect" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-pink-500">
+                            <option value="ทั้งหมด">ทั้งหมด</option>
+                            <option value="เสื้อ">เสื้อ</option>
+                            <option value="กางเกง">กางเกง</option>
+                            <option value="กระโปรง">กระโปรง</option>
+                            <option value="ใบหน้า">ใบหน้า</option>
+                            <option value="ทรงผม">ทรงผม</option>
+                            <option value="รองเท้า">รองเท้า</option>
+                            <option value="ชุดแฟชั่น">ชุดแฟชั่น</option>
+                            <option value="เครื่องประดับ">เครื่องประดับ</option>
+                        </select>
+                    </div>
+                    <!-- Source -->
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">แหล่งที่มา / โปรโมชัน</label>
+                        <select id="sourceSelect" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-pink-500">
+                            <option value="ทั้งหมด">ทั้งหมด</option>
+                            <option value="Topup">Topup (เติมเงิน)</option>
+                            <option value="Gacha">Gacha (กาชา)</option>
+                            <option value="Golden Gacha">Golden Gacha</option>
+                            <option value="Bonus Time">Bonus Time</option>
+                            <option value="โปรโมชันพิเศษ">โปรโมชันพิเศษ</option>
+                            <option value="กิจกรรมฟรี">กิจกรรมฟรี</option>
+                        </select>
+                    </div>
+                    <!-- Gender -->
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">เพศตัวละคร</label>
+                        <select id="genderSelect" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-pink-500">
+                            <option value="ทั้งหมด">ทั้งหมด</option>
+                            <option value="ชาย/หญิง">ชาย/หญิง</option>
+                            <option value="ชาย">ชาย</option>
+                            <option value="หญิง">หญิง</option>
+                        </select>
+                    </div>
+                    <!-- Sort -->
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">เรียงลำดับ</label>
+                        <select id="sortSelect" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-pink-500">
+                            <option value="oldest" selected>ใหม่ไปเก่า</option>
+                            <option value="newest">เก่าไปใหม่</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Item Grid -->
+                <div id="itemGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                    <!-- Data injected via JS -->
+                </div>
+
+                <!-- Pagination -->
+                <div class="flex justify-center items-center space-x-4 pt-4">
+                    <button id="prevPage" onclick="changePage(-1)" class="px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm hover:bg-slate-700 disabled:opacity-50">ก่อนหน้า</button>
+                    <span id="pageInfo" class="text-sm text-slate-400">หน้าที่ 1 / 1</span>
+                    <button id="nextPage" onclick="changePage(1)" class="px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm hover:bg-slate-700 disabled:opacity-50">ถัดไป</button>
+                </div>
+            </section>
+
+            <!-- TAB 2: AI Image Search -->
+            <section id="tabAiSearch" class="hidden space-y-6">
+                <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 max-w-2xl mx-auto space-y-4">
+                    <h2 class="text-xl font-semibold text-center text-pink-400">ค้นหาไอเทมด้วยรูปภาพ (AI Vision)</h2>
+                    <p class="text-sm text-slate-400 text-center">อัปโหลดภาพตัวละครหรือไอเทมที่คุณต้องการค้นหาในระบบ</p>
+                    
+                    <div class="flex flex-col items-center justify-center border-2 border-dashed border-slate-600 rounded-xl p-6 hover:border-pink-500 transition cursor-pointer" onclick="document.getElementById('imageFile').click()">
+                        <input type="file" id="imageFile" accept="image/*" class="hidden" onchange="previewImage(event)">
+                        <div id="uploadPlaceholder" class="text-center space-y-2">
+                            <span class="text-4xl">📁</span>
+                            <p class="text-sm text-slate-300">คลิกเพื่อเลือกรูปภาพ หรือลากไฟล์มาวางที่นี่</p>
+                        </div>
+                        <img id="imagePreview" class="hidden max-h-48 rounded-lg object-contain">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">ส่วนที่ต้องการโฟกัส</label>
+                            <select id="targetPart" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm">
+                                <option value="auto">อัตโนมัติ (Auto)</option>
+                                <option value="full">เต็มตัว (Full)</option>
+                                <option value="top">เสื้อผ้าส่วนบน (Top)</option>
+                                <option value="bottom">ส่วนล่าง (Bottom)</option>
+                                <option value="head">หัว/หมวก/หน้า (Head)</option>
+                                <option value="feet">รองเท้า (Feet)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">กรองหมวดหมู่เฉพาะ</label>
+                            <select id="aiCategory" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm">
+                                <option value="ทั้งหมด">ทั้งหมด</option>
+                                <option value="เสื้อ">เสื้อ</option>
+                                <option value="กางเกง">กางเกง</option>
+                                <option value="กระโปรง">กระโปรง</option>
+                                <option value="ใบหน้า">ใบหน้า</option>
+                                <option value="ทรงผม">ทรงผม</option>
+                                <option value="รองเท้า">รองเท้า</option>
+                                <option value="ชุดแฟชั่น">ชุดแฟชั่น</option>
+                                <option value="เครื่องประดับ">เครื่องประดับ</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button onclick="submitAiSearch()" class="w-full py-3 bg-gradient-to-r from-pink-600 to-purple-600 text-white font-medium rounded-lg hover:opacity-95 transition">
+                        ค้นหาด้วย AI ทันที
+                    </button>
+                </div>
+
+                <!-- AI Search Results -->
+                <div id="aiResultContainer" class="space-y-4 hidden">
+                    <h3 class="text-lg font-semibold border-b border-slate-700 pb-2">ผลลัพธ์การค้นหาด้วยภาพ</h3>
+                    <div id="aiResultGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Modal Donate Promptpay -->
+    <div id="donateModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl">
+            <h3 class="text-lg font-bold text-pink-400">☕ สนับสนุนผู้จัดทำ</h3>
+            <p class="text-sm text-slate-300">ขอบคุณที่สนับสนุนเว็บไซต์ของเราครับ 💕</p>
+            <div class="bg-slate-900 border border-slate-700 p-4 rounded-xl space-y-1">
+                <p class="text-xs text-slate-400">พร้อมเพย์ (PromptPay)</p>
+                <p class="text-xl font-bold tracking-wider text-white">098-892-0419</p>
+                <p class="text-sm font-medium text-pink-300">ชื่อบัญชี: เพิ่มพล</p>
+            </div>
+            <button onclick="closeDonateModal()" class="w-full py-2 bg-pink-600 hover:bg-pink-500 text-white font-medium rounded-lg transition text-sm">
+                ปิดหน้าต่าง
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer เล็กๆ ด้านล่าง -->
+    <footer class="bg-slate-800 border-t border-slate-700 mt-12 py-4 text-center text-xs text-slate-500">
+        <p>Audition Fashion Finder &copy; 2026</p>
+    </footer>
+
+    <!-- Script ควบคุมหน้าเว็บ -->
+    <script>
+        let currentPage = 1;
+        let totalPages = 1;
+
+        function showDonateModal() {
+            document.getElementById('donateModal').classList.remove('hidden');
+        }
+
+        function closeDonateModal() {
+            document.getElementById('donateModal').classList.add('hidden');
+        }
+
+        // สลับแท็บ
+        function switchTab(tab) {
+            if (tab === 'browse') {
+                document.getElementById('tabBrowse').classList.remove('hidden');
+                document.getElementById('tabAiSearch').classList.add('hidden');
+                document.getElementById('btnBrowse').className = 'px-4 py-2 rounded-lg font-medium bg-pink-600 text-white transition';
+                document.getElementById('btnAiSearch').className = 'px-4 py-2 rounded-lg font-medium bg-slate-700 text-slate-300 hover:bg-slate-600 transition';
+                loadItems();
+            } else {
+                document.getElementById('tabBrowse').classList.add('hidden');
+                document.getElementById('tabAiSearch').classList.remove('hidden');
+                document.getElementById('btnAiSearch').className = 'px-4 py-2 rounded-lg font-medium bg-pink-600 text-white transition';
+                document.getElementById('btnBrowse').className = 'px-4 py-2 rounded-lg font-medium bg-slate-700 text-slate-300 hover:bg-slate-600 transition';
+            }
+        }
+
+        // ฟังก์ชันแยกสีป้ายแหล่งที่มา
+        function getSourceBadgeStyle(sourceType) {
+            if (sourceType === 'Golden Gacha') {
+                return 'bg-amber-500/20 text-amber-300 border border-amber-500/40 font-semibold';
+            } else if (sourceType === 'Gacha') {
+                return 'bg-purple-500/20 text-purple-300 border border-purple-500/30';
+            } else if (sourceType === 'Topup') {
+                return 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+            } else if (sourceType === 'Bonus Time' || sourceType === 'Bonustime') {
+                return 'bg-orange-500/20 text-orange-300 border border-orange-500/40 font-semibold';
+            } else if (sourceType === 'โปรโมชันพิเศษ') {
+                return 'bg-sky-500/20 text-sky-300 border border-sky-500/30';
+            } else if (sourceType === 'กิจกรรมฟรี') {
+                return 'bg-rose-500/20 text-rose-300 border border-rose-500/30';
+            } else {
+                return 'bg-slate-700 text-slate-300';
+            }
+        }
+
+        // ดึงข้อมูลรายการไอเทมปกติ
+        async function loadItems() {
+            const search = document.getElementById('searchInput').value;
+            const category = document.getElementById('categorySelect').value;
+            const source = document.getElementById('sourceSelect').value;
+            const gender = document.getElementById('genderSelect').value;
+            const sort = document.getElementById('sortSelect').value;
+
+            const url = `/api/items?search=${encodeURIComponent(search)}&category=${encodeURIComponent(category)}&source=${encodeURIComponent(source)}&gender=${encodeURIComponent(gender)}&sort=${sort}&page=${currentPage}&limit=20`;
+
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                
+                totalPages = data.totalPages;
+                document.getElementById('pageInfo').innerText = `หน้าที่ ${data.page} / ${data.totalPages || 1}`;
+                document.getElementById('prevPage').disabled = data.page <= 1;
+                document.getElementById('nextPage').disabled = data.page >= data.totalPages;
+
+                const grid = document.getElementById('itemGrid');
+                grid.innerHTML = '';
+
+                if (data.items.length === 0) {
+                    grid.innerHTML = `<p class="col-span-full text-center text-slate-500 py-10">ไม่พบข้อมูลไอเทมที่คุณค้นหา</p>`;
+                    return;
+                }
+
+                data.items.forEach(item => {
+                    const badgeClass = getSourceBadgeStyle(item.sourceType);
+                    grid.innerHTML += `
+                        <div class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden shadow hover:border-pink-500 transition flex flex-col">
+                            <div class="aspect-square bg-slate-950/50 relative overflow-hidden flex items-center justify-center p-2">
+                                <img src="${item.img}" alt="${item.name}" class="object-contain w-full h-full" onerror="this.src='https://via.placeholder.com/150?text=No+Image'">
+                                <span class="absolute top-2 left-2 bg-black/60 backdrop-blur-sm text-xs px-2 py-1 rounded text-pink-300">${item.category}</span>
+                            </div>
+                            <div class="p-3 flex flex-col flex-grow justify-between space-y-2">
+                                <h4 class="text-sm font-medium line-clamp-2" title="${item.name}">${item.name}</h4>
+                                <div class="flex justify-between items-center text-xs text-slate-400">
+                                    <span class="px-2 py-0.5 rounded text-xs ${badgeClass}">${item.sourceType}</span>
+                                    <span>${item.gender}</span>
+                                </div>
+                                ${item.url ? `<a href="${item.url}" target="_blank" class="block text-center bg-pink-600/20 text-pink-400 hover:bg-pink-600 hover:text-white py-1.5 rounded text-xs font-medium transition">ดูรายละเอียด</a>` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (err) {
+                console.error("โหลดข้อมูลล้มเหลว:", err);
+            }
+        }
+
+        function changePage(direction) {
+            currentPage += direction;
+            loadItems();
+        }
+
+        // จัดการ Event เปลี่ยนฟิลเตอร์
+        ['searchInput', 'categorySelect', 'sourceSelect', 'genderSelect', 'sortSelect'].forEach(id => {
+            document.getElementById(id).addEventListener(id === 'searchInput' ? 'input' : 'change', () => {
+                currentPage = 1;
+                loadItems();
+            });
+        });
+
+        // พรีวิวรูปภาพก่อนค้นหา AI
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('imagePreview');
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                    document.getElementById('uploadPlaceholder').classList.add('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // ส่งภาพไปค้นหาด้วย AI
+        async function submitAiSearch() {
+            const fileInput = document.getElementById('imageFile');
+            if (fileInput.files.length === 0) {
+                alert("กรุณาเลือกรูปภาพก่อนค้นหา");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            const targetPart = document.getElementById('targetPart').value;
+            const category = document.getElementById('aiCategory').value;
+
+            const url = `/api/search-by-image?target_part=${targetPart}&category=${encodeURIComponent(category)}`;
+
+            document.getElementById('aiResultContainer').classList.add('hidden');
+            
+            try {
+                const res = await fetch(url, { method: "POST", body: formData });
+                const data = await res.json();
+
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+
+                const grid = document.getElementById('aiResultGrid');
+                grid.innerHTML = '';
+                document.getElementById('aiResultContainer').classList.remove('hidden');
+
+                if (data.results.length === 0) {
+                    grid.innerHTML = `<p class="col-span-full text-center text-slate-500 py-10">ไม่พบไอเทมที่ใกล้เคียงกับรูปภาพนี้</p>`;
+                    return;
+                }
+
+                data.results.forEach(resItem => {
+                    const item = resItem.item;
+                    const badgeClass = getSourceBadgeStyle(item.sourceType);
+                    grid.innerHTML += `
+                        <div class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden shadow flex flex-col">
+                            <div class="aspect-square bg-slate-950/50 relative overflow-hidden flex items-center justify-center p-2">
+                                <img src="${item.img}" alt="${item.name}" class="object-contain w-full h-full">
+                                <span class="absolute top-2 right-2 bg-emerald-600 text-xs px-2 py-1 rounded text-white font-bold">${resItem.confidence}% ตรงกัน</span>
+                            </div>
+                            <div class="p-3 flex flex-col flex-grow justify-between space-y-2">
+                                <h4 class="text-sm font-medium line-clamp-2">${item.name}</h4>
+                                <div class="flex justify-between items-center text-xs text-slate-400">
+                                    <span class="px-2 py-0.5 rounded text-xs ${badgeClass}">${item.sourceType}</span>
+                                    <span>${item.category}</span>
+                                </div>
+                                ${item.url ? `<a href="${item.url}" target="_blank" class="block text-center bg-pink-600/20 text-pink-400 hover:bg-pink-600 hover:text-white py-1.5 rounded text-xs font-medium transition">ดูรายละเอียด</a>` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (err) {
+                console.error("AI Search Error:", err);
+                alert("เกิดข้อผิดพลาดในการประมวลผล AI");
+            }
+        }
+
+        // โหลดข้อมูลเริ่มต้นเมื่อเปิดหน้าเว็บ
+        switchTab('browse');
+    </script>
+</body>
+</html>

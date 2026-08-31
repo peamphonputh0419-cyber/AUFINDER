@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+numpy
+opencv-python
+requests
+beautifulsoup4
+Pillow
+scikit-learn
+torch
+torchvision
+apscheduler
+tqdm
+pytesseract
+transformers>=4.45
+safetensors
